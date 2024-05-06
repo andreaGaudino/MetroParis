@@ -40,6 +40,6 @@ class Model:
         return self._fermate
 
     def getNumNodes(self):
-        return len(self._fermate)
+        return len(self._grafo.nodes)
     def getNumEdges(self):
-        return len(self._grafo)
+        return len(self._grafo.edges)
