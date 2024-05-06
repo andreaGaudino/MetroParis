@@ -37,15 +37,30 @@ class DAO():
         conn.close()
         return result
 
-    @staticmethod
-    def getEdge(v1, v2):
+    def getEdgesVicini(v1):
         conn = DBConnect.get_connection()
 
         result = []
 
         cursor = conn.cursor(dictionary=True)
-        query = "SELECT * FROM connessione c "
-        cursor.execute(query, ())
+        query = "SELECT * FROM connessione c where c .id_stazP = %s"
+        cursor.execute(query, (v1._id_fermata))
+
+        for row in cursor:
+            result.append(Connessione(row["id_connessione"], row["id_linea"], row["id_stazP"], row["id_stazA"]))
+        cursor.close()
+        conn.close()
+        return result
+
+    @staticmethod
+    def allConnessioni():
+        conn = DBConnect.get_connection()
+
+        result = []
+
+        cursor = conn.cursor(dictionary=True)
+        query = "SELECT * FROM connessione c"
+        cursor.execute(query)
 
         for row in cursor:
             result.append(Connessione(row["id_connessione"], row["id_linea"], row["id_stazP"], row["id_stazA"]))
