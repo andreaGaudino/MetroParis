@@ -16,6 +16,8 @@ class Controller:
         self._view.lst_result.controls.append(ft.Text("Grafo correttamente creato."))
         self._view.lst_result.controls.append(ft.Text(f"Il grafo ha {nNodes} nodi."))
         self._view.lst_result.controls.append(ft.Text(f"Il grafo ha {nEdges} archi"))
+
+
         self._view.update_page()
 
     def handleCercaRaggiungibili(self,e):
