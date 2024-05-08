@@ -16,12 +16,33 @@ class Controller:
         self._view.lst_result.controls.append(ft.Text("Grafo correttamente creato."))
         self._view.lst_result.controls.append(ft.Text(f"Il grafo ha {nNodes} nodi."))
         self._view.lst_result.controls.append(ft.Text(f"Il grafo ha {nEdges} archi"))
-
+        self._view._btnCalcola.disabled = False
 
         self._view.update_page()
 
+    def handleCreaGrafoPesato(self, e):
+        self._model.buildGraphPesato()
+        nNodes = self._model.getNumNodes()
+        nEdges = self._model.getNumEdges()
+        archiPesoMaggiore = self._model.getArchiPesoMaggiore()
+        self._view.lst_result.controls.clear()
+        self._view.lst_result.controls.append(ft.Text(f"Grafo pesato correttamente creato"))
+        self._view.lst_result.controls.append(ft.Text(f"Il grafo ha {nNodes} nodi"))
+        self._view.lst_result.controls.append(ft.Text(f"Il grafo ha {nEdges} archi"))
+        for a in archiPesoMaggiore:
+            self._view.lst_result.controls.append(ft.Text(f"{a[0]} - {a[1]} sono collegate da {a[2]} linee"))
+        self._view.update_page()
+
+
+
     def handleCercaRaggiungibili(self,e):
-        pass
+        visited = self._model.getDFSNodes(self._fermataPartenza)
+        self._view.lst_result.controls.clear()
+        self._view.lst_result.controls.append(ft.Text(f"Dalla stazione {self._fermataPartenza} posso raggiungere {len(visited)} stazioni"))
+        for v in visited:
+            self._view.lst_result.controls.append(
+                ft.Text(f"{v}"))
+        self._view.update_page()
 
     def loadFermate(self, dd: ft.Dropdown()):
         fermate = self._model.fermate
@@ -50,3 +71,4 @@ class Controller:
             self._fermataArrivo = None
         else:
             self._fermataArrivo = e.control.data
+

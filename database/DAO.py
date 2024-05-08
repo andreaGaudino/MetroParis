@@ -53,7 +53,7 @@ class DAO():
         return result
 
     @staticmethod
-    def allConnessioni():
+    def getAllConnessioni():
         conn = DBConnect.get_connection()
 
         result = []
