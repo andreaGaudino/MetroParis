@@ -16,6 +16,7 @@ class Controller:
         self._view.lst_result.controls.append(ft.Text("Grafo correttamente creato."))
         self._view.lst_result.controls.append(ft.Text(f"Il grafo ha {nNodes} nodi."))
         self._view.lst_result.controls.append(ft.Text(f"Il grafo ha {nEdges} archi"))
+
         self._view._btnCalcola.disabled = False
 
         self._view.update_page()
@@ -29,8 +30,11 @@ class Controller:
         self._view.lst_result.controls.append(ft.Text(f"Grafo pesato correttamente creato"))
         self._view.lst_result.controls.append(ft.Text(f"Il grafo ha {nNodes} nodi"))
         self._view.lst_result.controls.append(ft.Text(f"Il grafo ha {nEdges} archi"))
-        for a in archiPesoMaggiore:
-            self._view.lst_result.controls.append(ft.Text(f"{a[0]} - {a[1]} sono collegate da {a[2]} linee"))
+        # for a in archiPesoMaggiore:
+        #     self._view.lst_result.controls.append(ft.Text(f"{a[0]} - {a[1]} sono collegate da {a[2]} linee"))
+
+        self._view._btnCalcola.disabled = False
+        self._view._btnCalcolaPercorso.disabled = False
         self._view.update_page()
 
 
@@ -72,3 +76,26 @@ class Controller:
         else:
             self._fermataArrivo = e.control.data
 
+    def handlePercorso(self, e):
+        if self._fermataPartenza is None or self._fermataArrivo is None:
+            self._view.lst_result.clear()
+            self._view.lst_result.controls.append(ft.Text("Fermate non inserite"))
+            return
+        totTime, path = self._model.getBestPath(self._fermataPartenza, self._fermataArrivo)
+        tempoMinuti = int(totTime // 1)
+        tempoSecondi = int( round(totTime*60, 0) -  tempoMinuti * 60)
+
+
+        if path == []:
+            self._view.lst_result.clear()
+            self._view.lst_result.controls.append(ft.Text("Percorso non trovato"))
+            return
+
+        self._view.lst_result.clean()
+        self._view.lst_result.controls.append(ft.Text("Percorso trovato!"))
+        self._view.lst_result.controls.append(ft.Text(f"Il percorso tra {self._fermataPartenza} e {self._fermataArrivo} "
+                                                      f"impiega {tempoMinuti} minuti"
+                                                      f"e {tempoSecondi} secondi"))
+        for p in path:
+            self._view.lst_result.controls.append(ft.Text(f"{p}"))
+        self._view.update_page()

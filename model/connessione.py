@@ -15,7 +15,6 @@ class Connessione:
     @property
     def id_linea(self):
         return self._id_linea
-
     @property
     def id_stazP(self):
         return self._id_stazP
@@ -26,10 +25,10 @@ class Connessione:
 
 
     def __hash__(self):
-        return hash(self._id_connessione)
+        return hash(self.id_connessione)
 
     def __eq__(self, other):
-        return self._id_connessione == other._id_connesione
+        return self.id_connessione == other._id_connesione
 
     def __str__(self):
-        return self._id_connessione
+        return self.id_connessione

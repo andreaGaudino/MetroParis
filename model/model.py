@@ -1,5 +1,6 @@
 from database.DAO import DAO
 import networkx as nx
+from geopy import distance
 
 class Model:
     def __init__(self):
@@ -8,6 +9,10 @@ class Model:
         self._idMap = {}
         for f in self._fermate:
             self._idMap[f.id_fermata] = f
+        self._linee = DAO.getAllLinee()
+        self._lineeIdMap = {}
+        for l in self._linee:
+            self._lineeIdMap[l.id_linea] = l
 
     def buildGraph(self):
         self._grafo.add_nodes_from(self._fermate)
@@ -59,15 +64,36 @@ class Model:
             visited.append(v)
         return visited
 
+    def getTrasversalTime(self, v0, v1, linea):
+        p0 = (v0.coordX, v0.coordY)
+        p1 = (v1.coordX, v1.coordY)
+        distanza = distance.distance(p0, p1).km
+        velocita = linea.velocita
+        tempo = distanza/velocita * 60 # tempo calcolato in minuti
+        return tempo
 
     def addEdgesPesati(self):
         self._grafo.clear_edges()
         allConnessioni = DAO.getAllConnessioni()
         for c in allConnessioni:
-            if self._grafo.has_edge(self._idMap[c.id_stazP], self._idMap[c.id_stazA]):
-                self._grafo[self._idMap[c.id_stazP]][self._idMap[c.id_stazA]]["weight"] += 1
+
+            v0 = self._idMap[c.id_stazP]
+            v1 = self._idMap[c.id_stazA]
+            linea = self._lineeIdMap[c.id_linea]
+            peso = self.getTrasversalTime(v0, v1, linea)
+            if self._grafo.has_edge(v0, v1):
+                if self._grafo[v0][v1]["weight"] > peso:
+                    self._grafo[v0][v1]["weight"] = peso
+
             else:
-                self._grafo.add_edge(self._idMap[c.id_stazP], self._idMap[c.id_stazA], weight = 1)
+                self._grafo.add_edge(v0, v1, weight = peso)
+
+
+
+            # if self._grafo.has_edge(self._idMap[c.id_stazP], self._idMap[c.id_stazA]):
+            #     self._grafo[self._idMap[c.id_stazP]][self._idMap[c.id_stazA]]["weight"] += 1
+            # else:
+            #     self._grafo.add_edge(self._idMap[c.id_stazP], self._idMap[c.id_stazA], weight = 1)
 
     def buildGraphPesato(self):
         self._grafo.clear()
@@ -87,3 +113,7 @@ class Model:
                 if peso > 1:
                     result.append((u,v,peso))
             return result
+
+    def getBestPath(self, v0, v1):
+        costoTotale, path = nx.single_source_dijkstra(self._grafo, v0, v1)
+        return costoTotale, path
